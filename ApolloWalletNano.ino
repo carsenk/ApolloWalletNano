@@ -248,12 +248,12 @@ void hexSerialPrint(const uint8_t *data, const uint16_t sizeOfData) {
 /*
   Encrypt private key
 */
-uint8_t encryptPrivateKey[32];
+uint8_t _encryptPrivateKey[32];
 
 /*
   Public key
 */
-uint8_t publicKey[33];
+uint8_t _publicKey[33];
 
 /***********************************
   Main function
@@ -289,7 +289,7 @@ void setup() {
       for (uint8_t i = 0; i < 32; i++) {
         privateKey[i] = generateRandom();
       }
-    } while (computePublicKey(privateKey, publicKey) != 0);
+    } while (computePublicKey(privateKey, _publicKey) != 0);
 
     // Receive encryption key
     // EncryptionKey = SHA256(Password)
@@ -297,23 +297,23 @@ void setup() {
     receive32BytesData(encryptionKey);
 
     // Encrypt private key
-    encryptPrivateKeyWithAES256(privateKey, encryptionKey, encryptPrivateKey);
+    encryptPrivateKeyWithAES256(privateKey, encryptionKey, _encryptPrivateKey);
 
     // Write encrypt private key to EEPROM
     // Address: 1 - 32
     for (uint8_t i = 0; i < 32; i++) {
-      EEPROM.write(i + 1, encryptPrivateKey[i]);
+      EEPROM.write(i + 1, _encryptPrivateKey[i]);
     }
 
     // Write public key to EEPROM
     // Address: 33 - 65
     for (uint8_t i = 0; i < 33; i++) {
-      EEPROM.write(i + 33, publicKey[i]);
+      EEPROM.write(i + 33, _publicKey[i]);
     }
 
     // Output encrypt private key
     Serial.println(F("[OUTPUT]Backup"));
-    hexSerialPrint(encryptPrivateKey, 32);
+    hexSerialPrint(_encryptPrivateKey, 32);
 
     // Rewrite initial state flag
     // Address: 0
@@ -323,13 +323,13 @@ void setup() {
   // Read Encrypt private key from EEPROM
   // Address: 1 - 32
   for (uint8_t i = 0; i < 32; i++) {
-    encryptPrivateKey[i] = EEPROM.read(i + 1);
+    _encryptPrivateKey[i] = EEPROM.read(i + 1);
   }
 
   // Read public key from EEPROM
   // Address: 33 - 65
   for (uint8_t i = 0; i < 33; i++) {
-    publicKey[i] = EEPROM.read(i + 33);
+    _publicKey[i] = EEPROM.read(i + 33);
   }
 }
 
@@ -343,7 +343,7 @@ void loop() {
       if (!dataString.compareTo("PublicKey")) {
         // Output public key
         Serial.println(F("[OUTPUT]PublicKey"));
-        hexSerialPrint(publicKey, 33);
+        hexSerialPrint(_publicKey, 33);
       } else if (!dataString.compareTo("Sign")) {
         // Sign
         uint8_t encryptionKey[32];
@@ -356,14 +356,14 @@ void loop() {
         receive32BytesData(encryptionKey);
 
         // Decrypt private key
-        decryptPrivateKeyWithAES256(encryptPrivateKey, encryptionKey, privateKey);
+        decryptPrivateKeyWithAES256(_encryptPrivateKey, encryptionKey, privateKey);
 
         // Receive unsigned data
         Serial.println(F("[INPUT]UnsignedData"));
         receive32BytesData(unsignedData);
 
         // Sign
-        deterministicSign(privateKey, publicKey, unsignedData, signature);
+        deterministicSign(privateKey, _publicKey, unsignedData, signature);
 
         // Output signature
         Serial.println(F("[OUTPUT]Signature"));
@@ -371,7 +371,7 @@ void loop() {
       } else if (!dataString.compareTo("Backup")) {
         // Output encrypt private key
         Serial.println(F("[OUTPUT]Backup"));
-        hexSerialPrint(encryptPrivateKey, 32);
+        hexSerialPrint(_encryptPrivateKey, 32);
       } else {
         // Error
         Serial.println(F("Error"));
