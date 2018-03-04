@@ -195,15 +195,16 @@ void decryptPrivateKeyWithAES256(const uint8_t (&encryptPrivateKey)[32], const u
   @return 0-15: OK
           255 : NG
 */
-uint8_t hexCharToDigit(char c) {
-  if ( c >= '0' && c <= '9') {
+uint8_t hexCharToDigit(char c, bool& convert_error) {
+  if ('0' <= c && c <= '9') {
     return (uint8_t)(c - '0');
-  } else if ( (c >= 'A') && (c <= 'F') ) {
+  } else if ('A' <= c && c <= 'F') {
     return (uint8_t)(10 + c - 'A');
-  } else if ( (c >= 'a') && (c <= 'f') ) {
+  } else if ('a' <= c && c <= 'f') {
     return (uint8_t)(10 + c - 'a');
   } else {
-    return 255;
+    convert_error = true;
+    return 0;
   }
 }
 
@@ -211,29 +212,18 @@ uint8_t hexCharToDigit(char c) {
   Receive 32Bytes Data
   @output data: Receive data (32Bytes)
 */
-void receive32BytesData(uint8_t (&data)[32]) {
-  while (1) {
-    if (Serial.available() > 0) {
-      String dataString = Serial.readStringUntil('\r');
-
-      if (dataString.length() == 64) {
-        boolean error = false;
-
-        for (uint8_t i = 0; i < 32; i++) {
-          uint8_t c1 = hexCharToDigit(dataString.charAt(i * 2));
-          uint8_t c2 = hexCharToDigit(dataString.charAt(i * 2 + 1));
-
-          if (c1 == 255 || c2 == 255) {
-            error = true;
-            break;
-          }
-
-          data[i] = c1 * 16 + c2;
-        }
-
-        if (!error) {
-          break;
-        }
+void receive32BytesData(uint8_t(&data)[32]) {
+  uint8_t count = 0;
+  bool convert_error = false;
+  while (count < 32) {
+    if (2 <= Serial.available()) {
+      data[count] = hexCharToDigit(Serial.read(), convert_error) << 4;
+      data[count] += hexCharToDigit(Serial.read(), convert_error);
+      if (convert_error) {
+        convert_error = false;
+        count = 0;
+      } else {
+        count++;
       }
     }
   }
