@@ -9,7 +9,7 @@ This wallet running on Arduino nano.
 - Compute Public key
 - Digital signature
 
-## Supported cryptocurrency
+## Supported cryptocurrency (Test operation)
 - Bitcoin
 - Bitcoin (Testnet)
 
@@ -25,6 +25,6 @@ PCやスマートフォンなどのUSBシリアル通信が可能なデバイス
 - 公開鍵の生成
 - 電子署名
 
-## 対応暗号通貨
+## 対応暗号通貨 (動作確認済み)
 - Bitcoin
 - Bitcoin (Testnet)
