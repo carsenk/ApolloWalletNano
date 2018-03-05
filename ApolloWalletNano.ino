@@ -3,7 +3,7 @@
    @brief Appllo wallet nano is cryptocurrency hardware wallet.
    @author Shota Moriyasu (shota.moriyasu@gmail.com)
    @author Kazuho Kanahara
-   @date 2018/03/01
+   @date 2018/03/05
    @license GNU General Public License v3.0
 */
 
@@ -153,18 +153,10 @@ int8_t deterministicSign(const uint8_t (&privateKey)[32], const uint8_t (&public
 */
 void encryptPrivateKeyWithAES256(const uint8_t (&privateKey)[32], const uint8_t (&encryptionKey)[32], uint8_t (&encryptPrivateKey)[32]) {
   AES256 aes256;
-  uint8_t buffer[16];
-  uint8_t plainText[16];
 
   aes256.setKey(encryptionKey, aes256.keySize());
-
-  memcpy(plainText, privateKey, 16);
-  aes256.encryptBlock(buffer, plainText);
-  memcpy(encryptPrivateKey, buffer, 16);
-
-  memcpy(plainText, privateKey + 16, 16);
-  aes256.encryptBlock(buffer, plainText);
-  memcpy(encryptPrivateKey + 16, buffer, 16);
+  aes256.encryptBlock(encryptPrivateKey, privateKey);
+  aes256.encryptBlock(encryptPrivateKey + 16, privateKey + 16);
 }
 
 /**
@@ -175,18 +167,10 @@ void encryptPrivateKeyWithAES256(const uint8_t (&privateKey)[32], const uint8_t 
 */
 void decryptPrivateKeyWithAES256(const uint8_t (&encryptPrivateKey)[32], const uint8_t (&encryptionKey)[32], uint8_t (&privateKey)[32]) {
   AES256 aes256;
-  uint8_t buffer[16];
-  uint8_t cipherText[16];
 
   aes256.setKey(encryptionKey, aes256.keySize());
-
-  memcpy(cipherText, encryptPrivateKey, 16);
-  aes256.decryptBlock(buffer, cipherText);
-  memcpy(privateKey, buffer, 16);
-
-  memcpy(cipherText, encryptPrivateKey + 16, 16);
-  aes256.decryptBlock(buffer, cipherText);
-  memcpy(privateKey + 16, buffer, 16);
+  aes256.decryptBlock(privateKey, encryptPrivateKey);
+  aes256.decryptBlock(privateKey + 16, encryptPrivateKey + 16);
 }
 
 /**
