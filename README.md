@@ -17,6 +17,7 @@ This wallet running on Arduino nano.
 ## Supported cryptocurrency (Test operation)
 - Bitcoin
 - Bitcoin (Testnet)
+- XTRABYTES
 
 アポロウォレットnano
 ==================
@@ -38,3 +39,4 @@ PCやスマートフォンなどのUSBシリアル通信が可能なデバイス
 ## 対応暗号通貨 (動作確認済み)
 - Bitcoin
 - Bitcoin (Testnet)
+- XTRABYTES
