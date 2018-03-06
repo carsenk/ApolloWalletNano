@@ -3,6 +3,11 @@ Apollo wallet nano
 Apollo wallet nano is open source cryptocurrency hardware wallet.
 This wallet running on Arduino nano.
 
+## WARNING
+- This wallet is a test phase.
+- The communication protocol is planned to be changed.
+-- No EEPROM changes.
+
 ## Feature
 - All open source (Hardware and Software)
 - Low cost ($5 -)
@@ -24,6 +29,11 @@ This wallet running on Arduino nano.
 アポロウォレットnanoはオープンソースの暗号通貨ハードウェアウォレットです。
 このウォレットはArduino nano上で動作します。
 PCやスマートフォンなどのUSBシリアル通信が可能なデバイスで使用可能です。
+
+## 警告
+- このウォレットはテスト段階です。
+- 通信プロトコルの変更が予定されています。
+-- EEPROMの変更はありません。
 
 ## 特徴
 - 全てオープンソース (ハードウェアからソフトウェアまで)
