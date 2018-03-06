@@ -6,7 +6,7 @@ This wallet running on Arduino nano.
 ## WARNING
 - This wallet is a test phase.
 - The communication protocol is planned to be changed.
--- No EEPROM changes.
+  - No EEPROM changes.
 
 ## Feature
 - All open source (Hardware and Software)
@@ -33,7 +33,7 @@ PCやスマートフォンなどのUSBシリアル通信が可能なデバイス
 ## 警告
 - このウォレットはテスト段階です。
 - 通信プロトコルの変更が予定されています。
--- EEPROMの変更はありません。
+  - EEPROMの変更はありません。
 
 ## 特徴
 - 全てオープンソース (ハードウェアからソフトウェアまで)
