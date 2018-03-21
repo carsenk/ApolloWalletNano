@@ -178,7 +178,13 @@ void decryptPrivateKeyWithAES256(const uint8_t (&encryptPrivateKey)[32], const u
   @output data: Receive data (32Bytes)
 */
 void receive32BytesData(uint8_t(&data)[32]) {
-  Serial.readBytes(data, 32);
+  uint8_t c = 0;
+  while(c < 32){
+    if (Serial.available() > 0) {
+      data[c] = Serial.read();
+      c++;
+    }
+  }
 }
 
 /**
@@ -192,6 +198,7 @@ void hexSerialPrint(const uint8_t *data, const uint16_t sizeOfData) {
     Serial.write("0123456789ABCDEF"[data[i] & 0xf]);
   }
   Serial.println();
+  Serial.flush();
 }
 
 /***********************************
@@ -225,6 +232,7 @@ void setup() {
   pinMode(12, INPUT_PULLUP);
   if (digitalRead(12) == LOW) {
     Serial.println(F("Reset"));
+    Serial.flush();
     for (uint16_t i = 0; i < EEPROM.length(); i++) {
       EEPROM.write(i, 0);
     }
@@ -246,6 +254,7 @@ void setup() {
     // Receive encryption key
     // EncryptionKey = SHA256(Password)
     Serial.println(F("[INPUT]NewEncryptionKey"));
+    Serial.flush();
     receive32BytesData(encryptionKey);
 
     // Encrypt private key
@@ -265,6 +274,7 @@ void setup() {
 
     // Output encrypt private key
     Serial.println(F("[OUTPUT]Backup"));
+    Serial.flush();
     hexSerialPrint(_encryptPrivateKey, 32);
 
     // Rewrite initial state flag
@@ -287,6 +297,7 @@ void setup() {
 
 void loop() {
   Serial.println(F("[INPUT]SelectActions"));
+  Serial.flush();
 
   while (1) {
     if (Serial.available() > 0) {
@@ -295,6 +306,7 @@ void loop() {
       if (!dataString.compareTo("PublicKey")) {
         // Output public key
         Serial.println(F("[OUTPUT]PublicKey"));
+        Serial.flush();
         hexSerialPrint(_publicKey, 33);
       } else if (!dataString.compareTo("Sign")) {
         // Sign
@@ -305,6 +317,7 @@ void loop() {
 
         // Receive encryption key
         Serial.println(F("[INPUT]EncryptionKey"));
+        Serial.flush();
         receive32BytesData(encryptionKey);
 
         // Decrypt private key
@@ -312,6 +325,7 @@ void loop() {
 
         // Receive unsigned data
         Serial.println(F("[INPUT]UnsignedData"));
+        Serial.flush();
         receive32BytesData(unsignedData);
 
         // Sign
@@ -319,14 +333,17 @@ void loop() {
 
         // Output signature
         Serial.println(F("[OUTPUT]Signature"));
+        Serial.flush();
         hexSerialPrint(signature, 64);
       } else if (!dataString.compareTo("Backup")) {
         // Output encrypt private key
         Serial.println(F("[OUTPUT]Backup"));
+        Serial.flush();
         hexSerialPrint(_encryptPrivateKey, 32);
       } else {
         // Error
         Serial.println(F("Error"));
+        Serial.flush();
       }
 
       break;
