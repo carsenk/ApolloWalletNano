@@ -282,16 +282,19 @@ void setup() {
     EEPROM.write(0, 1);
   }
 
-  // Read Encrypt private key from EEPROM
-  // Address: 1 - 32
-  // Read public key from EEPROM
-  // Address: 33 - 65
+  readEncryptPrivateKeyAndPublicKey(_encryptPrivateKey, _publicKey);
+}
+
+// Read Encrypt private key from EEPROM
+// Address: 1 - 32
+// Read public key from EEPROM
+// Address: 33 - 65
+void readEncryptPrivateKeyAndPublicKey(uint8_t& __encryptPrivateKey[32], uint8_t& __publicKey[32]){
   for (uint8_t i = 1; i <= 32; i++) {
-    _encryptPrivateKey[i] = EEPROM.read(i);
-    _publicKey[i] = EEPROM.read(i + 32);
+    __encryptPrivateKey[i] = EEPROM.read(i);
+    __publicKey[i] = EEPROM.read(i + 32);
   }
-  _publicKey[i] = EEPROM.read(65);
-  
+  __publicKey[i] = EEPROM.read(65);  
 }
 
 void loop() {
