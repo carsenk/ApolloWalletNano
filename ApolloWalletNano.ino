@@ -302,60 +302,60 @@ void setup() {
 
   //read encrypt private key and public key
   readEncryptPrivateKeyAndPublicKey(_encryptPrivateKey, _publicKey);
+
+  Serial.println(F("[INPUT]SelectActions"));
+  Serial.flush();
 }
 
 void loop() {
-  Serial.println(F("[INPUT]SelectActions"));
-  Serial.flush();
 
-  while (1) {
-    if (Serial.available() > 0) {
-      String dataString = Serial.readStringUntil('\r');
+  if (Serial.available() > 0) {
+    String dataString = Serial.readStringUntil('\r');
 
-      if (!dataString.compareTo("PublicKey")) {
-        // Output public key
-        Serial.println(F("[OUTPUT]PublicKey"));
-        Serial.flush();
-        hexSerialPrint(_publicKey, 33);
-      } else if (!dataString.compareTo("Sign")) {
-        // Sign
-        uint8_t encryptionKey[32];
-        uint8_t privateKey[32];
-        uint8_t unsignedData[32];
-        uint8_t signature[64];
+    if (!dataString.compareTo("PublicKey")) {
+      // Output public key
+      Serial.println(F("[OUTPUT]PublicKey"));
+      Serial.flush();
+      hexSerialPrint(_publicKey, 33);
+    } else if (!dataString.compareTo("Sign")) {
+      // Sign
+      uint8_t encryptionKey[32];
+      uint8_t privateKey[32];
+      uint8_t unsignedData[32];
+      uint8_t signature[64];
 
-        // Receive encryption key
-        Serial.println(F("[INPUT]EncryptionKey"));
-        Serial.flush();
-        receive32BytesData(encryptionKey);
+      // Receive encryption key
+      Serial.println(F("[INPUT]EncryptionKey"));
+      Serial.flush();
+      receive32BytesData(encryptionKey);
 
-        // Decrypt private key
-        decryptPrivateKeyWithAES256(_encryptPrivateKey, encryptionKey, privateKey);
+      // Decrypt private key
+      decryptPrivateKeyWithAES256(_encryptPrivateKey, encryptionKey, privateKey);
 
-        // Receive unsigned data
-        Serial.println(("[INPUT]UnsignedData"));
-        Serial.flush();
-        receive32BytesData(unsignedData);
+      // Receive unsigned data
+      Serial.println(("[INPUT]UnsignedData"));
+      Serial.flush();
+      receive32BytesData(unsignedData);
 
-        // Sign
-        deterministicSign(privateKey, _publicKey, unsignedData, signature);
+      // Sign
+      deterministicSign(privateKey, _publicKey, unsignedData, signature);
 
-        // Output signature
-        Serial.println(F("[OUTPUT]Signature"));
-        Serial.flush();
-        hexSerialPrint(signature, 64);
-      } else if (!dataString.compareTo("Backup")) {
-        // Output encrypt private key
-        Serial.println(F("[OUTPUT]Backup"));
-        Serial.flush();
-        hexSerialPrint(_encryptPrivateKey, 32);
-      } else {
-        // Error
-        Serial.println(F("Error"));
-        Serial.flush();
-      }
-
-      break;
+      // Output signature
+      Serial.println(F("[OUTPUT]Signature"));
+      Serial.flush();
+      hexSerialPrint(signature, 64);
+    } else if (!dataString.compareTo("Backup")) {
+      // Output encrypt private key
+      Serial.println(F("[OUTPUT]Backup"));
+      Serial.flush();
+      hexSerialPrint(_encryptPrivateKey, 32);
+    } else {
+      // Error
+      Serial.println(F("Error"));
+      Serial.flush();
     }
+
+    break;
   }
+
 }
