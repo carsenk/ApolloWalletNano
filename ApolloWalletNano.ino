@@ -201,6 +201,33 @@ void hexSerialPrint(const uint8_t *data, const uint16_t sizeOfData) {
   Serial.flush();
 }
 
+
+
+// Read Encrypt private key from EEPROM
+// Address: 0 - 31
+// Read public key from EEPROM
+// Address: 32 - 64
+void readEncryptPrivateKeyAndPublicKey(uint8_t& __encryptPrivateKey[32], uint8_t& __publicKey[32]){
+  for (uint8_t i = 0; i < 32; i++) {
+    __encryptPrivateKey[i] = EEPROM.read(i);
+    __publicKey[i] = EEPROM.read(i + 32);
+  }
+  __publicKey[i] = EEPROM.read(64);  
+}
+
+// Write encrypt private key to EEPROM
+// Address: 0 - 31
+// Write public key to EEPROM
+// Address: 32 - 64
+void writeEncryptPrivateKeyAndPublicKey(const uint8_t& __encryptPrivateKey[32],const uint8_t& __publicKey[32]){
+  for (uint8_t i = 0; i < 32; i++) {
+    EEPROM.write(i, _encryptPrivateKey[i]);
+    EEPROM.write(i + 32, _publicKey[i]);
+  }
+  EEPROM.write(64, _publicKey[i]);
+}
+
+
 /***********************************
   Global variables
 ************************************/
@@ -239,7 +266,7 @@ void setup() {
   }
 
   // Initial state
-  if (EEPROM.read(0) == 0) {
+  if (EEPROM.read(65) == 0) {
     uint8_t privateKey[32];
     uint8_t encryptionKey[32];
 
@@ -269,36 +296,12 @@ void setup() {
     hexSerialPrint(_encryptPrivateKey, 32);
 
     // Rewrite initial state flag
-    // Address: 0
-    EEPROM.write(0, 1);
+    // Address: 65
+    EEPROM.write(65, 1);
   }
 
   //read encrypt private key and public key
   readEncryptPrivateKeyAndPublicKey(_encryptPrivateKey, _publicKey);
-}
-
-// Read Encrypt private key from EEPROM
-// Address: 1 - 32
-// Read public key from EEPROM
-// Address: 33 - 65
-void readEncryptPrivateKeyAndPublicKey(uint8_t& __encryptPrivateKey[32], uint8_t& __publicKey[32]){
-  for (uint8_t i = 0; i < 32; i++) {
-    __encryptPrivateKey[i] = EEPROM.read(i+1);
-    __publicKey[i] = EEPROM.read(i + 33);
-  }
-  __publicKey[i] = EEPROM.read(65);  
-}
-
-// Write encrypt private key to EEPROM
-// Address: 1 - 32
-// Write public key to EEPROM
-// Address: 33 - 65
-void writeEncryptPrivateKeyAndPublicKey(const uint8_t& __encryptPrivateKey[32],const uint8_t& __publicKey[32]){
-  for (uint8_t i = 0; i < 32; i++) {
-    EEPROM.write(i, _encryptPrivateKey[i+1]);
-    EEPROM.write(i + 33, _publicKey[i]);
-  }
-  EEPROM.write(65, _publicKey[i]);
 }
 
 void loop() {
@@ -330,7 +333,7 @@ void loop() {
         decryptPrivateKeyWithAES256(_encryptPrivateKey, encryptionKey, privateKey);
 
         // Receive unsigned data
-        Serial.println(F("[INPUT]UnsignedData"));
+        Serial.println(("[INPUT]UnsignedData"));
         Serial.flush();
         receive32BytesData(unsignedData);
 
