@@ -260,17 +260,8 @@ void setup() {
     // Encrypt private key
     encryptPrivateKeyWithAES256(privateKey, encryptionKey, _encryptPrivateKey);
 
-    // Write encrypt private key to EEPROM
-    // Address: 1 - 32
-    for (uint8_t i = 0; i < 32; i++) {
-      EEPROM.write(i + 1, _encryptPrivateKey[i]);
-    }
-
-    // Write public key to EEPROM
-    // Address: 33 - 65
-    for (uint8_t i = 0; i < 33; i++) {
-      EEPROM.write(i + 33, _publicKey[i]);
-    }
+    //write encrypt private key and public key
+    writeEncryptPrivateKeyAndPublicKey(_encryptPrivateKey, _publicKey);
 
     // Output encrypt private key
     Serial.println(F("[OUTPUT]Backup"));
@@ -282,6 +273,7 @@ void setup() {
     EEPROM.write(0, 1);
   }
 
+  //read encrypt private key and public key
   readEncryptPrivateKeyAndPublicKey(_encryptPrivateKey, _publicKey);
 }
 
@@ -290,11 +282,23 @@ void setup() {
 // Read public key from EEPROM
 // Address: 33 - 65
 void readEncryptPrivateKeyAndPublicKey(uint8_t& __encryptPrivateKey[32], uint8_t& __publicKey[32]){
-  for (uint8_t i = 1; i <= 32; i++) {
-    __encryptPrivateKey[i] = EEPROM.read(i);
-    __publicKey[i] = EEPROM.read(i + 32);
+  for (uint8_t i = 0; i < 32; i++) {
+    __encryptPrivateKey[i] = EEPROM.read(i+1);
+    __publicKey[i] = EEPROM.read(i + 33);
   }
   __publicKey[i] = EEPROM.read(65);  
+}
+
+// Write encrypt private key to EEPROM
+// Address: 1 - 32
+// Write public key to EEPROM
+// Address: 33 - 65
+void writeEncryptPrivateKeyAndPublicKey(const uint8_t& __encryptPrivateKey[32],const uint8_t& __publicKey[32]){
+  for (uint8_t i = 0; i < 32; i++) {
+    EEPROM.write(i, _encryptPrivateKey[i+1]);
+    EEPROM.write(i + 33, _publicKey[i]);
+  }
+  EEPROM.write(65, _publicKey[i]);
 }
 
 void loop() {
