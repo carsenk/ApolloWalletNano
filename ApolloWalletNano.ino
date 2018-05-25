@@ -15,9 +15,7 @@
 #include <Crypto.h>
 #include <AES.h>
 #include <EEPROM.h>
-/*
- * 
- */
+
 /***********************************
   Using uECC
 ************************************/
@@ -286,15 +284,14 @@ void setup() {
 
   // Read Encrypt private key from EEPROM
   // Address: 1 - 32
-  for (uint8_t i = 0; i < 32; i++) {
-    _encryptPrivateKey[i] = EEPROM.read(i + 1);
-  }
-
   // Read public key from EEPROM
   // Address: 33 - 65
-  for (uint8_t i = 0; i < 33; i++) {
-    _publicKey[i] = EEPROM.read(i + 33);
+  for (uint8_t i = 1; i <= 32; i++) {
+    _encryptPrivateKey[i] = EEPROM.read(i);
+    _publicKey[i] = EEPROM.read(i + 32);
   }
+  _publicKey[i] = EEPROM.read(65);
+  
 }
 
 void loop() {
